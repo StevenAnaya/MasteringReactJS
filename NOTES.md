@@ -369,3 +369,92 @@ Person.js
 
   export default Person;
 ```
+### Manejando contenido de forma condicional
+
+Es común encontrarnos con el escenario de mostrar cierto contenido dependiendo del valor de una variable. Para esto, en React podríamos hacerlo usando *Operadores Ternarios* pero a la larga, a medida de que va creaciendo nuestra aplicación, se va haciendo complejo de leer y mantener. 
+
+Una forma elegante y más legible de retornar elementos JSX. Aquí el ejemplo:
+
+``` javascript
+  import React, { Component } from 'react';
+
+  class App extends Component {
+    state = {
+      showPerson: false
+    };
+
+    render () {
+      // Crea una variable separada para manejar que retornar
+      let persons = null;
+
+      // Evalua si se debe mostrar el contenido y de ser así reasigna el valor con el contenido
+      if (this.state.showPerson) {
+        persons = (
+          <Person name="Andres" age={25}/>
+        );
+      };
+
+      return (
+        <div>
+          <button onClick={this.switchPersonsHandler}>Show Persons!</button>
+          { persons }
+        </div>
+      );
+    }
+  };
+
+  export default App;
+```
+  * De esta forma vemos que conservamos una estructura de codigo mucho más legible y no es tan confusa al no tener tantos anidamientos en las condiciones.
+
+
+### Actualizar el estado inmutablemente
+
+En cualquier lenguaje de programación lidiamos siempre con un evento simple... Copiar valores de una variable ya existente a otra nueva. Esto de primera mano parece sencillo, ¿pero que pasa en JavaScript? (Especialmente con los Objetos y Arreglos); Al tratar de copiar un Objeto y/o Arreglo manualmente, obtenemos su referencia de memoria más no una variable con puntero independiente, es decir, cualquier cambio que hagamos en, ya sea una copia o el original, se va a ver reflejado en todos los demás que se encuentre  referenciados a ese mismo puntero.
+
+Ahora, sin divagar tanto en el asunto, ¿como podemos modificar el *state* en React sin que creemos funcionamientos no controlados debido a problemas en las referencias? Facil, veamos un ejemplo:
+
+``` javascript
+  import React, { Component } from 'react';
+
+  class App extends Component {
+    state = {
+      persons = [
+        "carlos",
+        "andrea",
+        "Stephanie"
+      ]
+    };
+    
+    deletePersonHandler = personIndex => {
+      // Crea una copía, no asignes la referencia del estado
+      // para crear una copia en JS puedes usar las HOF o usar otra estrategia para crear una copia independiente
+      const persons = [...this.state.persons];
+      persons.splice(personIndex, 1);
+      // Ahora puedes actualizar el estado con la nueva información
+      this.setState({ persons });
+    };
+ 
+    render () {
+      return (
+        <div>
+          {
+            this.state.persons.map((person, index) => {
+              return <Person 
+                  name={person}
+                  click={this.deletePersonHandler.bind(this, index)}
+                />
+            })
+          }
+        </div>
+      )
+    };
+  };
+
+  export default App;
+```
+
+#### No uses el index
+
+Es común que en React utilicemos la propiedad *index* que nos entregan las HOF como propiedad *key* cuando intentamos renderizar listas, pero esto nos lleva a una mala practica y aun problema de rendimiento. React necesita identificadores claves unicos que le permitan hacer las comporacaciones entre el RealDOM y el VirtualDOM de manera eficiente sin tener que comparar toda la lista completa. Simplemente, en muchos casos, podemos usar ID's unicos que nos retornan los servicios o las bases de datos que tengamos a disposición.
+

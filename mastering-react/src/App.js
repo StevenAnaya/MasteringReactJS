@@ -7,31 +7,39 @@ import Person from './Person';
 class App extends Component {
   state = {
     persons: [
-      { name: "Steven", age: 22 },
-      { name: "Alejandro", age: 34 },
-      { name: "Carolina", age: 31 },
+      { id: 'awdaw12', name: "Steven", age: 22 },
+      { id: 'adw12131', name: "Alejandro", age: 34 },
+      { id: 'faw12', name: "Carolina", age: 31 },
     ],
-    otherInfo: 'This is other related information'
+    otherInfo: 'This is other related information',
+    showPersons: false
   };
 
-  switchPersonHandler = (name) => {
-    this.setState({
-      persons: [
-        { name: name, age: 23 },
-        { name: 'Alejandro', age: 34 },
-        { name: 'Carolina', age: 31 },
-      ]
-    });
+  deletePersonHandler = indexPerson => {
+    const persons = this.state.persons;
+    persons.splice(indexPerson, 1);
+    this.setState({ persons });
   };
 
-  changePersonHandler = event => {
-    this.setState({
-      persons: [
-        { name: 'Steven', age: 23 },
-        { name: event.target.value, age: 34 },
-        { name: 'Carolina', age: 31 },
-      ]
-    });
+  switchVisibilityPersons = () => {
+    const doesPerson = this.state.showPersons;
+    this.setState({ showPersons: !doesPerson });
+  };
+
+  changeNameHandler = (event, index) => {
+    const personIndex = this.state.persons.findIndex(p =>
+        p.id === index
+      );
+    
+    const person = {
+      ...this.state.persons[personIndex]
+    };
+    
+    person.name = event.target.value;
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    this.setState({ persons });
   };
 
   render() {
@@ -43,22 +51,36 @@ class App extends Component {
       cursor: 'pointer'
     };
 
+    let persons = null;
+
+    if (this.state.showPersons) {
+      persons = (
+        <div>
+          {
+            this.state.persons.map((person, index) => {
+              return <Person 
+                  name={person.name}
+                  age={person.age}
+                  click={this.deletePersonHandler.bind(this, index)}
+                  change={event => this.changeNameHandler(event, person.id)}
+                  key={person.id}
+                />
+            })
+          }
+        </div>
+      );
+    };
+
     return (
       <div className="App"> 
         <button
           style={style}
-          onClick={this.switchPersonHandler.bind(this, 'Ariel')}>Switch Me</button>
-        <Person
-          name={this.state.persons[0].name}
-          age={this.state.persons[0].age}>I love: Graphic Design!</Person>
-        <Person
-          click={this.switchPersonHandler.bind(this, 'Anaya')}
-          change={this.changePersonHandler}
-          name={this.state.persons[1].name}
-          age={this.state.persons[1].age}/>
-        <Person
-          name={this.state.persons[2].name}
-          age={this.state.persons[2].age}/>
+          onClick={this.switchVisibilityPersons}>Show Persons</button>
+          <div>
+            {
+              persons
+            }
+          </div>
       </div>
     );
   };
