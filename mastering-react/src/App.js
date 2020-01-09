@@ -1,8 +1,24 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import './App.css';
 
 /* COMPONENTS */
 import Person from './Person';
+
+/* STYLES */
+const StyledButton = styled.button`
+  background-color: ${props => props.alts ? 'red' : 'green'};
+  color: white;
+  font: inherit;
+  border: 1px solid blue;
+  padding: 8px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${props => props.alts ? 'salmon' : 'lightgreen'};
+    color: black;
+  }
+`;
 
 class App extends Component {
   state = {
@@ -42,13 +58,16 @@ class App extends Component {
     this.setState({ persons });
   };
 
+
   render() {
-    const style = {
-      backgroundColor: 'white',
-      font: 'inherit',
-      border: '1px solid blue',
-      padding: '8px',
-      cursor: 'pointer'
+    const classes = [];
+
+    if (this.state.persons.length <= 2) {
+      classes.push('red');
+    };
+
+    if (this.state.persons.length <= 1) {
+      classes.push('bold');
     };
 
     let persons = null;
@@ -73,9 +92,11 @@ class App extends Component {
 
     return (
       <div className="App"> 
-        <button
-          style={style}
-          onClick={this.switchVisibilityPersons}>Show Persons</button>
+        <h1>React Application</h1>
+        <p className={classes.join(' ')}>I display persons information</p>
+        <StyledButton
+          onClick={this.switchVisibilityPersons}
+          alts={this.state.showPersons}>Show Persons</StyledButton>
           <div>
             {
               persons
