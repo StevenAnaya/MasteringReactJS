@@ -458,3 +458,59 @@ Ahora, sin divagar tanto en el asunto, ¿como podemos modificar el *state* en Re
 
 Es común que en React utilicemos la propiedad *index* que nos entregan las HOF como propiedad *key* cuando intentamos renderizar listas, pero esto nos lleva a una mala practica y aun problema de rendimiento. React necesita identificadores claves unicos que le permitan hacer las comporacaciones entre el RealDOM y el VirtualDOM de manera eficiente sin tener que comparar toda la lista completa. Simplemente, en muchos casos, podemos usar ID's unicos que nos retornan los servicios o las bases de datos que tengamos a disposición.
 
+### Debbuging React Apps
+
+Una forma de depurar aplicaciones creadas con React, es utilizar la pestaña "Source" de las herramientas de la consola del navegador, poniendo *breakpoints* los cuales harán de pausador del codigo y nos permitira navegar paso por paso, conociendo los valores de las variables y la ejecución del codigo que vamos viendo.
+
+Otra forma de poder ver que estamos codificando, es usar las extensiones que nos provee la comunidad para ver la jerarquia y todo lo relacionado al renderizado de los componentes en el navegador. Dichas extensiones estan disponibles tanto para Chrome como para Firefox. Lo unico que debemos hacer es dirigirnos a la pestaña de "Componentes" de la consola de desarrollo del navegador y ahí encontraremos toda la información relacionada a los componentes.
+
+#### Error Boundaries
+
+En React podemos manejar algunos componentes problematicos usando el metodo `componentDidCatch` el cual nos permite capturar las excepciones arrojadas por un componente en el momento de un fallo. En la practica, es usar componentes HOC con los cuales vamos a encerrar nuestros componentes problematicos y en donde vamos manipular el error para mostrar un estado controlado de dicho error.
+
+  * Se recomienda no usar estos *Boundaries* en toda nuestra aplicación, de hecho se recomienda usarlos prudentemente en los componentes que sabemos pueden generar errores.
+
+  * Este tipo de manejo de excepciones solo se puede ver en producción. En modo de desarrollo las excepciones seguirán apreciendo normalmente.
+
+``` javascript
+  import React, { Component } from 'react';
+
+  class ErrorBoundary extends Component {
+    state = {
+      showErr: false,
+      message: ''
+    };
+
+    componentDidCatch = (err, message) => {
+      this.setState({ showErr: true, message });
+    };
+    
+    render () {
+      if (showErr) {
+        return (
+          <h1>{this.state.message}</h1>
+        );
+      }
+
+      return this.props.children;
+    };
+  };
+
+  export default ErrorBoundary;
+```
+
+En el otro archivo:
+
+``` javascript
+  import ErrorBoundary from './ErrorBoundary';
+
+  //...Definición de la clase
+  render () => {
+    <ErrorBoundary>
+      <FailComponent />
+    </ErrorBoundary>
+  }
+```
+En la documentación oficial de React, podemos ver más a profundidad este tema, donde aprenderemos los metodos del ciclo de vida disponibles para el manejo de errores, como usarlos, donde usarlos y como diferenciarlos de un simple TryCatch.
+
+[Error Boundary React](https://es.reactjs.org/docs/error-boundaries.html)
