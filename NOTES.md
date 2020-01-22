@@ -514,3 +514,217 @@ En el otro archivo:
 En la documentación oficial de React, podemos ver más a profundidad este tema, donde aprenderemos los metodos del ciclo de vida disponibles para el manejo de errores, como usarlos, donde usarlos y como diferenciarlos de un simple TryCatch.
 
 [Error Boundary React](https://es.reactjs.org/docs/error-boundaries.html)
+
+### Profundizando conceptos internos de los Componentes y React
+
+#### Ciclo de vida de los Componentes - Desde React 16.3
+
+En la actualidad, con React podemos manejar el ciclo de vida de nuestros componentes de dos formas, usando componentes basados en clases o usando React Hooks con componentes funcionales. Debido al enfoque de este curso, veremos como se maneja con componentes de clase y su equivalente en componentes con React Hooks.
+
+Los componentes pasan por distintos estados en el momento en que son renderizados en el DOM, veamos cuales son y que fases del ciclo de vida componen cada estado:
+
+##### Ciclo de vida - Creación
+
+Cuando un componente (Componente de clases en este caso) se va crear sigue el siguiente orden de ejecución:
+
+  * `constructor(props)`: Esta fase esta más relacionada a como funcionan las clases de JavaScript. Este nos sirve para inicializar estados iniciales de nuestro componente. A nivel tecnico siempre que vayamos a usar este metodo, se recomienda usar el metodo `super(props)` para enlazar las propiedades al Scope this de la clase.
+
+    * DO: Configurar el estado inicial.
+    * DON'T: Usar codigo que pueda causar efectos colaterales en el componente, como lo son las peticiones HTTP.
+
+    ``` javascript
+      constructor(props) {
+        super(props);
+
+        this.state = {
+          showTitle: this.props.showTitle
+        };
+      };
+    ```
+
+  * `getDerivedStateFromProps(props, state)`: Este Hook nos permite actualizar el estado interno de nuestro componente cuando las propiedades (props) hayan cambiado, es decir, se ejecutará cada vez que un cambio en las propieades se registre. Este Hook es poco común al momento de usar React, pero es bueno tenerlo siempre en mente.
+
+  Ten en cuenta que este método se activa en cada renderizado, independientemente de la causa y justamente antes del render y siempre que haya algun cambio de estado posterior.
+
+    * DO: Sincronizar el estado.
+    * DON'T: Usar codigo que pueda causar efectos colaterales en el componente, como lo son las peticiones HTTP.
+
+  ``` javascript
+      static getDerivedStateFromProps(props, state) {
+        // State sync
+        return state;
+      };
+  ```
+  
+  * `render()`: Se encarga de preparar y estructurar todo el codigo JSX que hemos definido. Es importante saber que nada puede estar bloqueando este metodo, porque puede causar problemas de rendimiento.
+
+    * DO: declarar el codigo JSX.
+    * DON'T: Usar codigo que pueda causar efectos colaterales en el componente, como lo son las peticiones HTTP.
+
+    ``` javascript
+      render() {
+        return (
+          <MyApp />
+        );
+      };
+    ```
+
+  * `Render Child Components`: Una vez que el metodo render se ha ejecutado, el empezará a renderizar todos los componentes hijos que contenga, si es que es el caso. render esperará hasta que todos los hijos hayan ejucutado todos los Hook del ciclo de vida también.
+
+  * `componentDidMount()`: Cuando el metodo render finalizado la creación, se ejecuta componentDidMount y es aquí donde podemos causar efectos colaterales como llamados HTTP y demás peticiones que usen la web. Es imperativo decir que en este metodo es muy mala practica actualizar el estado sincronamente, es decir, solo debemos actualizarlo si estamos haciendo petiones que usan promesas o codigo asincrono, todo esto, para evitar problemas de re-renderizados innecesarios que afectan directamente el rendimiento de nuestro codigo.
+
+    * DO: Usar codigo que pueda causar efectos colaterales como peticiones HTTP, llamados a localStorage, etc.
+    * DON'T: Actualizar el estado sincronamente dentro del metodo. 
+
+    ``` javascript
+      componentDidMount() {
+        // SideEffect stuffs
+      };
+    ```
+
+##### Ciclo de vida - Actualización
+
+Esta fase inicia con el metodo `getDerivedStateFromProps` y se encarga de todo el proceso relacionado al renderizado cuando el estado o las props cambian. Veamos que metodos componen esta fase y como se deben usar correctamente:
+
+  * `getDerivedStateFromProps(props, state)`: Sabemos como funciona este metodo, pero cabe resaltar que este es punto inicial de la fase de actualización.
+
+    * DO: Sincronizar el estado con las props.
+    * DON'T: Usar codigo que pueda causar efectos colaterales en el componente, como lo son las peticiones HTTP.
+  
+  * `shouldComponentUpdate(nextProps, nextState)`: Se encarga de decidir si debe re-evaluar y re-renderizar el componente. Este metodo nos permite crear mejoras en el rendimiento, evitando re-renderizados innecesarios. *Debemos tener en cuenta que este metodo puede cancelar el proceso de actualización y por ende generar comportamientos no controlados.* Para este metodo debes retornar `true` o `false`, no podemos crear expresiones que no retornan nada, debido a que de esa manera React sabe si debe o no continuar con el proceso.
+
+    * DO: Decidir SI continuar con la actualización del componente o NO.
+    * DON'T: Usar codigo que pueda causar efectos colaterales en el componente, como lo son las peticiones HTTP.
+
+    ``` javascript
+      shouldComponentUpdate(nextProps, nextState) {
+        if (this.state.number == nextState.number) {
+          return false;
+        };
+
+        return true;
+      };
+    ```
+
+  * `render()`: funciona exactamente igual que el render de la fase de Creación.
+
+  * `Update Child Component Props`: Actualiza todos los nodos hijos en los cuales ha cambiado sus propiedades.
+
+  * `getSnapshotBeforeUpdate(prevProps, prevState)`: Permite recuperar las propiedades y el estado anterior justamente antes de que la actualización en el DOM ocurra. Este metodo no nos permite realizar actualizaciones en el DOM, sino crear objetos con los estados y propiedades que queremos conservar para luego consumirlo o manipularlo como deseemos. No es común su uso, pero una practica que puede funcionar con este, es conservar la posición del scroll del usuario cuando estamos renderizando nuevos componentes.
+
+    * DO: Operaciones de ultimo minuto que tengas que hacer antes de renderizar el DOM.
+    * DON'T: Usar codigo que pueda causar efectos colaterales en el componente, como lo son las peticiones HTTP.
+
+    ``` javascript
+      getSnapshotBeforeUpdate(prevProps, prevState) {
+        // Tenemos que retornar un objeto cualquiera con los datos que queremos capturar o guardar en el siguiente metodo
+        return {
+          scrollX: prevState.scrollX,
+          message: 'Render perfomed on component' + {prevState.numberComponent}
+        }
+      };
+    ```
+
+  * `componentDidUpdate(prevProps, prevState, snapshot)`: Este se ejecuta cuando el renderizado se realiza exitosamente. Podemos realizar en este peticiones HTTP o operaciones con efectos colaterales, debemos estar precabidos de no generar ciclos infinitos de rerenderizados innecesarios.
+
+    * DO: Realizar operaciones de efectos colaterales.
+    * DON'T: Actualizar el estado sincronamente o generar disparadores de rerenderizado.
+
+  ``` javascript
+    componentDidUpdate(prevProps, prevState, snapshot) {
+      this.setState({ scrollX: snapshot.scrollX }); // No es ideal, solo un ejemplo
+      //Otras cosas asincronas...
+    };
+  ```
+
+##### Ciclo de vida - Hooks
+
+Los `React Hooks` son funciones que nos entrega React para acceder al ciclo de vida (no completamente, pero podemos usar los metodos mas utiles) y al estado de un componente enteramente funcional. Estos se ejecutan cada vez que ocurre un cambio en el componente en el caso del useEffect() (Podemos prevenir ese comportamiento agregandole ciertas implementaciones), es decir, cada vez que se crear el componente se ejecuta, cada vez que se actualiza también.
+
+La sintaxis basica de los dos Hooks que más vamos a usar es la siguiente:
+
+  * useState: `const [state, setNewState] = useState(initialState)`
+  * useEffect: `useEffect(() => {//SideEffect code...}, [])`
+
+  ###### Controlando el comportamiento de useEffect()
+
+  Cuando usamos `useEffect()` es común enfretarnos al problema del renderizado involuntario. Claro, si nosotros no le especificamos a React cuando debe y cuando no actualizarse, el lo hará siempre por defecto. Veamos entonces como podemos decirle a React cuando y bajo que condiciones debe ejecutarse el metodo `useEffect`. Antes debemos saber que esto se da usando el segundo argumento de useEffect, que puede ser un arreglo con las propiedades que se encargara de vigilar.
+
+  1) Cuando debe ejecutarse dependiendo de la actualización de una propiedad.
+  
+    ``` javascript
+      import React, { Fragment, useEffect } from 'react';
+
+      import { StyledButton } from './styles';
+
+      const Cockpit = (props) => {
+        useEffect(() => {
+          setTimeout(() => {
+            alert('Saved Data to the Cloud!');
+          }, 1000);
+        }, [props.persons]);
+
+        const classes = [];
+
+        if (props.persons.length <= 2) {
+          classes.push('red');
+        };
+
+        if (props.persons.length <= 1) {
+          classes.push('bold');
+        };
+
+        return (
+          <Fragment>
+            <h1>{props.title}</h1>
+            <p className={classes.join(' ')}>I display persons information</p>
+            <StyledButton
+              onClick={props.clicked}
+              alts={props.showPersons}>Show Persons</StyledButton>
+          </Fragment>
+        );
+      };
+
+      export default Cockpit;
+    ```
+
+    * Esta implementación se ejecutará unicamente cuando la propiedad persons cambie de estado, es decir, si cambia cualquier otra propiedad que no sea la especificada, esta no se ejecutará. NOTA: siempre se ejecutara 1 vez inicial.
+
+  2) Cuando debe solo ejecutarse una vez inicial, es decir imitar el comportamiento de componentDidMount.
+  
+  ``` javascript
+      import React, { Fragment, useEffect } from 'react';
+
+      import { StyledButton } from './styles';
+
+      const Cockpit = (props) => {
+        useEffect(() => {
+          setTimeout(() => {
+            alert('Saved Data to the Cloud!');
+          }, 1000);
+        }, [); // Pass an empty Array
+
+        const classes = [];
+
+        if (props.persons.length <= 2) {
+          classes.push('red');
+        };
+
+        if (props.persons.length <= 1) {
+          classes.push('bold');
+        };
+
+        return (
+          <Fragment>
+            <h1>{props.title}</h1>
+            <p className={classes.join(' ')}>I display persons information</p>
+            <StyledButton
+              onClick={props.clicked}
+              alts={props.showPersons}>Show Persons</StyledButton>
+          </Fragment>
+        );
+      };
+
+      export default Cockpit;
+    ```
+    * Cuando pasamos un arreglo vacio, React entiende que no tenemos dependencias enlazadas a nuestro componente y por ende solo ejecutará el Hook una vez. Esa ejecución se da al momento de montar el componente, más exactamente cuando se ha montado.
