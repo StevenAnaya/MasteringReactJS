@@ -68,17 +68,17 @@ En otro sentido, Props se usa en componentes funcionales y son pasadas desde un 
 
 En React podemos escuchar eventos de nuestros Componentes, pero para continuar con el objetivo de este curso, no vamos a profundizar como funciona, en lugar de eso, vamos a listar la cantidad de eventos que podemos escuchar (Casi la misma cantidad que con JS puro).
 
-  #### Clipboard Events:
+  ### Clipboard Events:
 
     * Eventos: *onCopy, onCut, onPaste*
     * Propiedades: DOMDataTransfer, clipboardData
 
-  #### Composition Events
+  ### Composition Events
 
   * Eventos: *onCompositionEnd onCompositionStart onCompositionUpdate*
   * Propiedades: string data
 
-  #### Keyboard Events
+  ### Keyboard Events
 
     * Eventos: *onKeyDown onKeyPress onKeyUp*
     * Propiedades: 
@@ -96,16 +96,16 @@ En React podemos escuchar eventos de nuestros Componentes, pero para continuar c
         - **boolean** shiftKey
         - **number** which
 
-  #### Focus Events
+  ### Focus Events
 
     * Eventos: *onFocus onBlur*
     * Propiedades: DOMEventTarget relatedTarget
 
-  #### Form Events
+  ### Form Events
 
     * Eventos: *onChange onInput onInvalid onSubmit*
 
-  #### Mouse Events
+  ### Mouse Events
 
     * Eventos: 
         - *onClick* 
@@ -142,11 +142,11 @@ En React podemos escuchar eventos de nuestros Componentes, pero para continuar c
         - **number** screenY
         - **boolean** shiftKey
 
-  #### Selection Events
+  ### Selection Events
 
     * Eventos: *onSelect*
 
-  #### Touch Events
+  ### Touch Events
 
     * Eventos: *onTouchCancel onTouchEnd onTouchMove onTouchStart*
     * Propiedades:
@@ -159,14 +159,14 @@ En React podemos escuchar eventos de nuestros Componentes, pero para continuar c
         - **DOMTouchList** targetTouches
         - **DOMTouchList** touches
 
-  #### UI Events
+  ### UI Events
 
     * Eventos: *onScroll*
     * Propiedades:
       - **number** detail
       - **DOMAbstractView** view
 
-  #### Wheel Events
+  ### Wheel Events
 
     * Eventos: *onWheel*
     * Propiedades:
@@ -175,7 +175,7 @@ En React podemos escuchar eventos de nuestros Componentes, pero para continuar c
       - **number** deltaY
       - **number** deltaZ
 
-  #### Media Events
+  ### Media Events
 
     * Eventos:
         - *onAbort*
@@ -202,11 +202,11 @@ En React podemos escuchar eventos de nuestros Componentes, pero para continuar c
         - *onVolumeChange*
         - *onWaiting*
 
-  #### Image Events
+  ### Image Events
 
     * Eventos: *onLoad onError*
 
-  #### Animation Events
+  ### Animation Events
 
     * Eventos: *onAnimationStart onAnimationEnd onAnimationIteration*
     * Propiedades: 
@@ -214,7 +214,7 @@ En React podemos escuchar eventos de nuestros Componentes, pero para continuar c
       - **string** pseudoElement
       - **float** elapsedTime
 
-  #### Transition Events
+  ### Transition Events
 
     * Eventos: *onTransitionEnd*
     * Propiedades: 
@@ -222,7 +222,7 @@ En React podemos escuchar eventos de nuestros Componentes, pero para continuar c
         - **string** pseudoElement
         - **float** elapsedTime
 
-  #### Other Events
+  ### Other Events
 
     * Eventos: *onToggle*
 
@@ -454,7 +454,7 @@ Ahora, sin divagar tanto en el asunto, ¿como podemos modificar el *state* en Re
   export default App;
 ```
 
-#### No uses el index
+### No uses el index
 
 Es común que en React utilicemos la propiedad *index* que nos entregan las HOF como propiedad *key* cuando intentamos renderizar listas, pero esto nos lleva a una mala practica y aun problema de rendimiento. React necesita identificadores claves unicos que le permitan hacer las comporacaciones entre el RealDOM y el VirtualDOM de manera eficiente sin tener que comparar toda la lista completa. Simplemente, en muchos casos, podemos usar ID's unicos que nos retornan los servicios o las bases de datos que tengamos a disposición.
 
@@ -464,7 +464,7 @@ Una forma de depurar aplicaciones creadas con React, es utilizar la pestaña "So
 
 Otra forma de poder ver que estamos codificando, es usar las extensiones que nos provee la comunidad para ver la jerarquia y todo lo relacionado al renderizado de los componentes en el navegador. Dichas extensiones estan disponibles tanto para Chrome como para Firefox. Lo unico que debemos hacer es dirigirnos a la pestaña de "Componentes" de la consola de desarrollo del navegador y ahí encontraremos toda la información relacionada a los componentes.
 
-#### Error Boundaries
+### Error Boundaries
 
 En React podemos manejar algunos componentes problematicos usando el metodo `componentDidCatch` el cual nos permite capturar las excepciones arrojadas por un componente en el momento de un fallo. En la practica, es usar componentes HOC con los cuales vamos a encerrar nuestros componentes problematicos y en donde vamos manipular el error para mostrar un estado controlado de dicho error.
 
@@ -517,13 +517,13 @@ En la documentación oficial de React, podemos ver más a profundidad este tema,
 
 ### Profundizando conceptos internos de los Componentes y React
 
-#### Ciclo de vida de los Componentes - Desde React 16.3
+### Ciclo de vida de los Componentes - Desde React 16.3
 
 En la actualidad, con React podemos manejar el ciclo de vida de nuestros componentes de dos formas, usando componentes basados en clases o usando React Hooks con componentes funcionales. Debido al enfoque de este curso, veremos como se maneja con componentes de clase y su equivalente en componentes con React Hooks.
 
 Los componentes pasan por distintos estados en el momento en que son renderizados en el DOM, veamos cuales son y que fases del ciclo de vida componen cada estado:
 
-##### Ciclo de vida - Creación
+### Ciclo de vida - Creación
 
 Cuando un componente (Componente de clases en este caso) se va crear sigue el siguiente orden de ejecución:
 
@@ -582,7 +582,7 @@ Cuando un componente (Componente de clases en este caso) se va crear sigue el si
       };
     ```
 
-##### Ciclo de vida - Actualización
+### Ciclo de vida - Actualización
 
 Esta fase inicia con el metodo `getDerivedStateFromProps` y se encarga de todo el proceso relacionado al renderizado cuando el estado o las props cambian. Veamos que metodos componen esta fase y como se deben usar correctamente:
 
@@ -637,7 +637,7 @@ Esta fase inicia con el metodo `getDerivedStateFromProps` y se encarga de todo e
     };
   ```
 
-##### Ciclo de vida - Hooks
+### Ciclo de vida - Hooks
 
 Los `React Hooks` son funciones que nos entrega React para acceder al ciclo de vida (no completamente, pero podemos usar los metodos mas utiles) y al estado de un componente enteramente funcional. Estos se ejecutan cada vez que ocurre un cambio en el componente en el caso del useEffect() (Podemos prevenir ese comportamiento agregandole ciertas implementaciones), es decir, cada vez que se crear el componente se ejecuta, cada vez que se actualiza también.
 
@@ -646,7 +646,7 @@ La sintaxis basica de los dos Hooks que más vamos a usar es la siguiente:
   * useState: `const [state, setNewState] = useState(initialState)`
   * useEffect: `useEffect(() => {//SideEffect code...}, [])`
 
-  ###### Controlando el comportamiento de useEffect()
+  #### Controlando el comportamiento de useEffect()
 
   Cuando usamos `useEffect()` es común enfretarnos al problema del renderizado involuntario. Claro, si nosotros no le especificamos a React cuando debe y cuando no actualizarse, el lo hará siempre por defecto. Veamos entonces como podemos decirle a React cuando y bajo que condiciones debe ejecutarse el metodo `useEffect`. Antes debemos saber que esto se da usando el segundo argumento de useEffect, que puede ser un arreglo con las propiedades que se encargara de vigilar.
 
@@ -692,7 +692,7 @@ La sintaxis basica de los dos Hooks que más vamos a usar es la siguiente:
 
   2) Cuando debe solo ejecutarse una vez inicial, es decir imitar el comportamiento de componentDidMount.
   
-  ``` javascript
+    ``` javascript
       import React, { Fragment, useEffect } from 'react';
 
       import { StyledButton } from './styles';
@@ -728,3 +728,235 @@ La sintaxis basica de los dos Hooks que más vamos a usar es la siguiente:
       export default Cockpit;
     ```
     * Cuando pasamos un arreglo vacio, React entiende que no tenemos dependencias enlazadas a nuestro componente y por ende solo ejecutará el Hook una vez. Esa ejecución se da al momento de montar el componente, más exactamente cuando se ha montado.
+
+  #### Realizando operaciones de limpieza en los metodos del ciclo de vida y useEffect
+
+  Es comun encontrarnos con el escenario de tener que remover una conexión a un servicio al momento de eliminar ciertos componentes, claro, esto significa una buena practica y una mejora en el rendimiento de nuestra aplicación, ¿Pero como podemos lograr ese proceso de limpieza con React?... Sencillo, usamos los siguientes metodos y las siguientes implementaciones con useEffect.
+
+    * `componenteWillUnmount`: Este metodo siempre se ejecuta justo antes de que el componente sea desmontado del DOM. Es perfecto para realizar tareas de limpieza de datos, storages, conexiones o EventListeners.
+
+      ``` javascript
+          componentWillUnmount() {
+            //Remove logic code here...
+          };
+      ```
+    
+  En el caso de los React Hooks, su implementación se hace cuanto menos sencilla y su ejecución depende igualmente de las dependencias que tengamos como "disparadoras". Veamos ejemplos:
+
+    * Sin importar las dependencias que pongamos, este efecto de limpieza o de desmontado no se ejecutará en el primer ciclo de renderizado, es decir, en el ciclo de creación del componente.
+
+    * **Ejecución despues de cada actualización**: Al igual que cuando usamos useEffect sin dependencias este se ejecutara en cada ciclo de actualización y el orden de ejecucion será 1) función 2 del return 2) función 1 del cuerpo de useEffect.
+
+      ``` javascript
+        useEffect(() => {
+          /* -----------Funcion 1 del cuerpo------------ */
+          setTimeout(() => {
+            console.log('Ejecución normal del useEffect');
+          }, 1000);
+          /* -----------Funcion 1 del cuerpo------------ */
+
+          /* -----------Funcion 2 del return------------ */
+          return () => { 
+            console.log('Cleanup in useEffect')
+          };
+          /* -----------Funcion 2 del return------------ */
+        }); //Whitout second argument
+      ```
+      * Este metodo se ejecutara cada vez que exista un re-render, puede ser util para cuando tenenmos que hacer algun efecto de limpiar datos y demás.
+    
+    * **Unicamente cuando el componente se desmonte**: Se ejecutará unicamente cuando el componente en el que fue usado el Hook se vaya a desmontar. Ningun otro efecto de actualizado en la jerarquia del arbol disparará este metodo de limpieza a no ser de que el mismo componente se vaya a desmontar.
+
+      ``` javascript
+        useEffect(() => {
+          /* -----------Funcion 1 del cuerpo------------ */
+          setTimeout(() => {
+            console.log('Ejecución normal del useEffect');
+          }, 1000);
+          /* -----------Funcion 1 del cuerpo------------ */
+
+          /* -----------Funcion 2 del return------------ */
+          return () => { 
+            console.log('Cleanup in useEffect')
+          };
+          /* -----------Funcion 2 del return------------ */
+        }, []); //Passing empty array or an array with dependencies
+      ```
+        * Este metodo se ejecuta una sola vez cuando el componente se va a desmontar. Si pasamos dependencias, el resultado no varia a excepción de las condiciones que tomará en cuenta para poder ejecutar la función.
+
+  #### Usando ShouldComponentUpdate para mejorar el rendimiento
+
+  Para entrar en contextp, React actualiza el DOM comparando el VirtualDOM con el RealDOM, es decir, si existen cambios React se encargará de actualizar lo que se ve en pantalla. Claro, esto en un principio resulta estupendo para nosotros pero podemos mejorar este comportamiento, ¿Como podemos lograrlo?... Sencillo, tengamos en mente que cuando un componente que tiene 2 componentes hijos, quiere actualizar solo 1, el ejecutará el metodo render y realizará todas las operaciones de Renderizado en todos sus hijos, en pocas palabras, el hará la comparación de cada componente en el VirtualDOM con los existentes en el RealDOM, pero si uno no cambió y queremos por temas de rendimiento, evitar que React haga la comparación, podemos usar el metodo ShouldComponenteUpdate que le dirá a React bajo que condiciones realizar la comparación. Veamos un ejemplo de esto en codigo:
+
+    ``` javascript
+      shouldComponentUpdate(nextProps, nextState) {
+        if (nextProps.ourDependencie !== this.props.ourDependecie) {
+          return true;
+        } else {
+          return false;
+        };
+      };
+    ```
+
+      * A grandes rasgos, lo que hacemos es decirle a React, que si la propiedad(es) que le indicamos cambia, ejecute la comparación y por ende haga la actualización, de otra forma, no deberia hacer nada ni dentro del VirtualDOM ni del RealDOM.
+
+      * **NOTA**: es imperativo decir, que React o JavaScript si intentamos hacer comparaciones con *Reference Types* estamos comparando los punteros y si no manejamos los cambios de estados en nuestros componentes de forma inmutable, vamos a tener problemas de comparación y nuestros componentes no se comportarán como esperamos.
+
+
+  #### Mejora de rendimiento en Componentes Funcionales con React.memo
+
+  Vimos una ventaja poderosa de los componentes basados en clases que nos permite mejorar el rendimiento atraves del metodo ShouldComponentUpdate, pero al analizar los nuevos enfoques de React, ¿Como podemos ganar esa mejora de rendimiento con componentes Funcionales?... Facil, usamos la función de React llama `memo` que utiliza Memoización para realizar una pequeña captura del estado o de las propiedades del componente, almacenarla dicha captura, y comparar si las propieades actuales y las siguientes son diferentes para realizar una actualización pertinente. Veamos el ejemplo:
+
+    ``` javascript
+      import React from 'react';
+
+      const MemoComp = (props) => {
+        //Component code here...
+      };
+
+      export default React.memo(MemoComp);
+    ```
+
+  #### PureComponent en lugar de ShouldComponentUpdate
+
+  Pensemos lo siguiente, ¿Qué tendriamos que hacer si necesitamos verificar todas las propiedades que nos llegan en un componente dentro del ShouldComponentUpdate?... Tendriamos que agregar validaciones que puede que sean demasiado largas y dificiles de mantener y reusar. Ante dicho problema, React nos permite extender de una clase llamada `PureComponent` que se encarga de realizar todas estas validaciones de renderizada segun el cambio de sus propiedades. Veamos el codigo:
+
+    ``` javascript
+      import React, { PureComponent } from 'react';
+
+      class Component extends PureComponent {
+        render() {
+          return (
+            <OtherComponent />
+          );
+        };
+      };
+
+      export default Component;
+    ```
+
+    * No hay necesidad siquiera de escribir el metodo ShouldComponentUpdate. La clase `PureComponent` se encarga de realizar las validaciones de render con todas las propiedades que tiene o le son pasadas al componente.
+
+
+### ¿Como React actualiza el DOM?
+
+React utilza un metodo para sugerir que se debe renderizar (`render`) pero el usarlo no significa que realmente lo que pongamos en dicho metodo es lo que se va a ver o actualizar en el DOM, ¿Porqué?. React crea 2 copias del DOM, mas exactamente 2 VirtualDOM.
+
+  1) **Old VirtualDOM**: contiene todo el estado del DOM anterior.
+  2) **Re-rendered VirtualDOM**: contiene todos los componentes que se envian a un re-renderizado debido a actualización en sus propiedades.
+
+Dichas copias funcionan mucho más rapido que el DOM del navegador y es por eso que React previene que sea hagan demasiadas actualizaciones en él, con eso en mente, es por eso que existen metodos como `ShouldComponentUpdate` que nos ayudan a prevenir dichos renderizados innecesarios. Por otro lado, la forma en la que React actualiza el estado es la siguiente: 
+
+  1) ejecución del metodo render()
+  2) comparación entre `Old VirtualDOM` y `Re-rendered VirtualDOM`.
+  3) Sí existen diferencias entre ellos, se actualiza el DOM unicamente las partes que cambiaron, de otro modo, no se actualizará nada en el RealDOM.
+
+  [React Update DOM Image](https://firebasestorage.googleapis.com/v0/b/token-sport.appspot.com/o/IllustrationNew%2FScreenshot_2020-01-23%20React%2016%20The%20Complete%20Course%20(incl%20React%20Router%204%20Redux).png?alt=media&token=8ba260f6-e38e-4c41-95d4-c17eec5aa068)
+
+### Renderizando Elementos JSX Adyacentes
+
+Seguro ya nos hemos topado con el error que nos indica que no podemos renderizar más de un elemento sin que esten envueltos en un componente padre. Es cuanto menos frustrante a veces y nos preguntamos porque no podemos renderizar elementos de esa forma?... La respuesta no envia a como funciona JavaScript. En JavaScript no podemos retornar mas de 1 expresión al tiempo. Ahora todo tiene sentido, debido a que React es enteramente JavaScript. Pero bueno, ahora que sabemos el porqué, veamos unas posibles soluciones improvisadas a esto:
+
+  * Retornar un arreglo con nuestros elementos JSX dentro. Esto funciona completamente, pero para poder renderizarlos tenemos que especificarles la propiedad `key` y resultaría engorroso agregarle una clave unica a cada elemento.
+    ``` javascript
+      const App = props => {
+        return [
+          <p key="u1">Hola</p>,
+          <p key="u2">Mundo</p>,
+          <p key="u3">En JSX</p>
+        ];
+      }
+    ```
+  
+  * Otra alternativa es crear un HOC (High Order Component) y retornar en el la propiedad `children` que recibimos. Luego, en nuestro componente con elementos adyacentes, importamos y envolvemos nuestros elementos con nuestro nuevo HOC.
+
+    ``` javascript
+      const hoc = props => props.children;
+
+      export default hoc;
+    ```
+    //Componente Adyacente
+    ``` javascript
+      import hoc from './hoc';
+
+      const App = props => {
+        return <Hoc>
+          <p>Hola</p>,
+          <p>Mundo</p>,
+          <p>En JSX</p>
+        </Hoc>;
+      }
+    ```
+
+  
+  **NOTA**: Ninguna de las dos alternativas anteriores renderizará algun elemento HTML en el RealDOM.
+
+  * Como punto final, desde la versión 16.2 de React, podemos usar un componente auxiliar para lidiar con este problema. El componente Fragment nos permite envolver elementos JSX Adyacentes sin tener que crear nuevos estilos o elementos HTML.
+
+    ``` javascript
+      import React, { Fragment } from 'react';
+
+      const App = props => {
+        return <Fragment>
+          <p>Hola</p>,
+          <p>Mundo</p>,
+          <p>En JSX</p>
+        </Fragment>;
+      }
+    ```
+  ### High Order Components - Introducción
+
+  Los High Order Components son componentes que envuelven otros componentes y les agregan nuevas caracteristicas, por ejemplo, nuevos elemenots JSX, nuevos estilos, nueva logica, etc. Podemos crear nuestros propios HOC's con la implementación que necesitemos sin requerir algun elemento extra, nada más la libreria core de React.
+
+  Tomando como referencia la definición de React sobre los HOCS, tenemos que: *Un componente de orden superior (HOC por las siglas en inglés de higher-order component) es una técnica avanzada en React para el reuso de la lógica de componentes. Los HOCs no son parte de la API de React. Son un patrón que surge de la naturaleza composicional de React.*
+
+  La [documentación](https://es.reactjs.org/docs/higher-order-components.html) de React nos entrega una guia estupenda acerca de que son, como funcionan y como crear nuestros propios HOC's.
+
+  Veamos dos formas sencillas de como crear HOC's:
+
+    * *Usando estructura de componentes funcionales*
+    
+      ``` javascript
+        import React from 'react';
+
+        const withClasses = (props) => {
+          return <div className={props.classes}>{props.children}</div>
+        };
+
+        export default withClasses;
+
+        const App = (props) => {
+          return <WithClasses>
+            /* ...JSX Code here */
+          </WithClasses>
+        }
+
+        export default App;
+      ```
+
+    * *Usando JavaScript puro*
+
+      ``` javascript
+        import React from 'react';
+
+        const withClasses = (WrappedComponent, className) => {
+          return props => <div className={className}>
+            <WrappedComponent 
+              data={...HOCData}
+              {...options}
+            />
+          </div>
+        };
+
+        export default withClasses;
+
+        const App = (props) => {
+          return <div>
+            /* ...JSX Code here */
+          </div>
+        }
+
+        export default withClasses(App, myClasses);
+      ```
+  
+  Debemos saber cuando usar cada enfoque de HOC, por ejemplo, si necesitamos manipular algo de JSX y estilos, lo adecuado sería que usamos Wrapped HOC's, pero si el caso es distinto y necesitamos agregar algo más de logica, como conectarnos a un Storage, crear subcripciones a fuentes de datos, lo correcto sería usar los JavaScript-Based HOC's.
+

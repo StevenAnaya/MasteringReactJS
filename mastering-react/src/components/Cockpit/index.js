@@ -4,19 +4,31 @@ import React, { Fragment, useEffect } from 'react';
 import { StyledButton } from './styles';
 
 const Cockpit = (props) => {
-  useEffect(() => {
+    useEffect(() => {
+    console.log('[Cockpit] first useEffect function');
     setTimeout(() => {
-      alert('Saved Data to the Cloud!');
+      alert('[Cockpit] timer')
     }, 1000);
-  }, [props.persons]);
+    return () => {
+    console.log('[Cockpit] second useEffect cleanup function');
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log('[Cockpit] first 2nd useEffect function');
+    return () => {
+    console.log('[Cockpit] second 2nd useEffect cleanup function');
+    };
+  });
+
 
   const classes = [];
 
-  if (props.persons.length <= 2) {
+  if (props.persons <= 2) {
     classes.push('red');
   };
 
-  if (props.persons.length <= 1) {
+  if (props.persons <= 1) {
     classes.push('bold');
   };
 
@@ -31,4 +43,4 @@ const Cockpit = (props) => {
   );
 };
 
-export default Cockpit;
+export default React.memo(Cockpit);
