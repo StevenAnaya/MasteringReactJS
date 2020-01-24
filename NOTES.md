@@ -911,52 +911,335 @@ Seguro ya nos hemos topado con el error que nos indica que no podemos renderizar
 
   La [documentación](https://es.reactjs.org/docs/higher-order-components.html) de React nos entrega una guia estupenda acerca de que son, como funcionan y como crear nuestros propios HOC's.
 
-  Veamos dos formas sencillas de como crear HOC's:
+  Veamos dos formas sencillas de como crear HOC's
 
-    * *Usando estructura de componentes funcionales*
-    
-      ``` javascript
-        import React from 'react';
+  *Usando estructura de componentes funcionales*.
 
-        const withClasses = (props) => {
-          return <div className={props.classes}>{props.children}</div>
-        };
+  ``` javascript
+    import React from 'react';
 
-        export default withClasses;
+    const withClasses = (props) => {
+      return <div className={props.classes}>{props.children}</div>
+    };
 
-        const App = (props) => {
-          return <WithClasses>
-            /* ...JSX Code here */
-          </WithClasses>
-        }
+    export default withClasses;
 
-        export default App;
-      ```
+    const App = (props) => {
+      return <WithClasses>
+        /* ...JSX Code here */
+      </WithClasses>
+    }
+
+    export default App;
+  ```
 
     * *Usando JavaScript puro*
 
-      ``` javascript
-        import React from 'react';
+  ``` javascript
+    import React from 'react';
 
-        const withClasses = (WrappedComponent, className) => {
-          return props => <div className={className}>
-            <WrappedComponent 
-              data={...HOCData}
-              {...options}
-            />
-          </div>
-        };
+    const withClasses = (WrappedComponent, className) => {
+      return props => <div className={className}>
+        <WrappedComponent 
+          data={...HOCData}
+          {...props}
+        />
+      </div>
+    };
 
-        export default withClasses;
+    export default withClasses;
 
-        const App = (props) => {
-          return <div>
-            /* ...JSX Code here */
-          </div>
-        }
+    const App = (props) => {
+      return <div>
+        /* ...JSX Code here */
+      </div>
+    }
 
-        export default withClasses(App, myClasses);
-      ```
+    export default withClasses(App, myClasses);
+  ```
   
   Debemos saber cuando usar cada enfoque de HOC, por ejemplo, si necesitamos manipular algo de JSX y estilos, lo adecuado sería que usamos Wrapped HOC's, pero si el caso es distinto y necesitamos agregar algo más de logica, como conectarnos a un Storage, crear subcripciones a fuentes de datos, lo correcto sería usar los JavaScript-Based HOC's.
 
+
+  ### Pasando Propiedades Desconocidas
+
+  Es importante recordar que nuestros componentes dentro de un HOC necesitan o tienen algunas propiedades que son vitales para su funcionamiento, pero cuando recibimos el componente dentro del HOC estas llegan como un objeto de JavaScript y se nos complica el poder volver a pasarles las propiedades que traian. Podemos solucionar dicho problema usando una sintaxis de JavaScript  y React de la siguiente forma:
+    
+  ```javascript
+    import React from 'react';
+
+    const withClasses = (WrappedComponent, className) => {
+      return props => <div className={className}>
+        <WrappedComponent 
+          data={...HOCData}
+          {...props} //Usamos el SpreadOperator al componente que devolvemos
+        />
+      </div>
+    };
+
+    export default withClasses;
+
+    const App = (props) => {
+      return <div>
+        /* ...JSX Code here */
+      </div>
+    }
+
+    export default withClasses(App, myClasses);
+  ```
+
+  ### Actualizando correctamente el estado
+
+  En React, los llamados a `setState()` no se ejecutan **inmediatamente**. Estos son programados por React y son ejecutados cuando React cuenta con los recursos necesarios para hacerlo. Basicamente, lo hace cuando el decide y cree que es conveniente hacerlo. Este efecto se puede apreciar mejor dependiendo del tamaño de la aplicación en cuestion, por ejemplo, en una pequeña la ejecución de `setState()` será casi que inmediata pero de igual forma no esta garantizada.
+
+  Creer que la ejecución de `setState()` es sincrona tal y como la escribimos en nuestro codigo es un error común y puede que nos traiga problemas cuando hacemos actualizaciones que dependen totalmente del estado anterior del componente. Entonces, veamos una forma correcta de actualizar nuestro estado segun el escenario descrito:
+
+  ``` javascript
+    this.setState((prevState, props) => {
+      return {
+        counter: prevState.counter + 1
+      }
+    })
+  ```
+
+      * pasamos una función que recibe el estado anterior y las propiedades actuales del componente en caso de que las necesitemos, para luego retonar el objeto con el nuevo estado.
+
+  Recordemos este patrón con no una solución alternativa a la actualización de estado sino veamolo como la forma correcta de actualizarlo cuando este depende del estado anterior.
+
+  ### Usando PropTypes para las propiedades
+
+  En React podemos especificar de que tipo deben ser las propiedades que recibe un componente, esto nos permitirá generar un estandar de codigo y una utilización de los componentes adecuada. Es perfecto para cuando trabajamos con equipos grandes o estamos desarrollando un paquete para NPM.
+
+  Para realizar la validación de tipos necesitamos, primero, instalar el paquete de npm `npm install --save-dev prop-types` y luego implementarlo de esta manera en nuestros componentes:
+
+  ``` javascript
+    import React from 'react';
+    import PropTypes from 'prop-types';
+
+    const App = props => {
+      return (
+        <div name={props.name} onClick={props.click}>App...</div>
+      )
+    }
+
+    App.propTypes = {
+      name: PropTypes.string,
+      click: PropTypes.func
+    };
+
+    export default App;
+  ```
+
+  ### Usando Referencias en React
+
+  Las referencias proporcionan una forma de acceder a los nodos del DOM o a elementos React creados en el método de renderizado. Ver más a profundidad en la [documentación](https://es.reactjs.org/docs/refs-and-the-dom.html).
+
+  En pocas palabras nos permite acceder a toda la información del nodo que estamos renderizando. Esto es demasiado util si por ejemplo necesitamos usar el metodo `focus()` en el elemento o cualquier otro metodo que nos provee la API ya sea de HTML o de React.
+
+  * #### No debemos abusar de ellas
+    Es normal que apriori se nos ocurra solucionar todo con Refs, pero es ahí donde debemos deternos y pensar de que forma tenemos que estructurar el estado de nuestra aplicación. El usar demasiadas Refs pueden romper el encapsulamiento de nuestros componentes y a su vez generar comportamientos inpredescibles.
+
+  * #### No funcionan con componentes Funcionales
+    Las Referencias no funcionan si intentamos obtener el nodo de un componente funcional directamente debido a que este componente no cuenta con instancias.
+
+  Las referencias pueden ser creadas apuntando a un componente de Clase o a un elemento HTML directamente. Su nodo se puede acceder por medio de la propiedad `current` y será actualizada siempre antes de los metodos `componentDidMount` y `componentDidUpdate`. Veamos como crear una referencia con la API propuesta desde la versión 16.3 de React.
+
+  ```javascript
+    import React, { PureComponent } from 'react';
+
+    class App extends PureComponent {
+      constructor(props) {
+        super(props);
+
+        this.MyRef = React.CreateRef();
+      };
+
+      componentDidMount () {
+        this.MyRef.current.focus(); //Agrega focus al input
+      };
+
+      render () {
+        return (
+          <div>
+            <label>Input Name</label>
+            <input
+              name="name"
+              value="value"
+              ref={this.MyRef}
+              onChange={this.onChange}
+            />
+          </div>
+        );
+      };
+    }
+  ```
+
+  * Las referencias también pueden apuntar a otros componentes JSX de clase o a elementos HTML dentro de un componente funcional.
+
+  ### Referencias con Hooks
+
+  Podemos crear referencias usando solamante componentes funcionales gracias a React Hooks. El funcionamiento es igual, lo unico diferente es la forma en la que los implementamos:
+
+  ```javascript
+    import React, { Fragment, useEffect, useRef } from 'react';
+
+    /* STYLES */
+    import { StyledButton } from './styles';
+
+    const Cockpit = (props) => {
+        const buttonRef = useRef(null);
+
+        useEffect(() => {
+        console.log('[Cockpit] first useEffect function');
+
+        setTimeout(() => {
+          alert('[Cockpit] timer')
+        }, 1000);
+
+        buttonRef.current.click(); //Clickea el button cuando el componente se ha montado
+        return () => {
+          console.log('[Cockpit] second useEffect cleanup function');
+        };
+      }, []);
+
+      return (
+        <Fragment>
+          <h1>{props.title}</h1>
+          <p>I display persons information</p>
+          <StyledButton
+            onClick={props.clicked}
+            ref={buttonRef}
+            alts={props.showPersons}>Show Persons</StyledButton>
+        </Fragment>
+      );
+    };
+  ```
+
+  ### Context API
+
+  `Context` nos provee una forma sencilla y directa de pasar propiedades a lo largo del arbol de componentes sin tener que estar pasandolas manualmente en cada componente. En otras palabras, `Context` nos provee un objeto global (Si se quiere) accesible para cualquier componente que se encuentre dentro de su alcance. Veamos como se compone basicamente un Context sencillo. Ver más en la [documentación](https://es.reactjs.org/docs/context.html)
+
+  * Primero debemos crear nuestro contexto con la utilidad que nos ofrece React. La creación puede ser en un archivo a parte, si se quiere.
+
+  ``` javascript
+    import React from 'react';
+
+    const MyContext = React.createContext({
+      authenticated: false,
+      login: () => {}
+    });
+
+    export default MyContext;
+  ```
+  
+  Este metodo como vemos nos recibe un valor inicial que pondrá por defecto si no le pasamos alguno más adelante. Este valor puede ser cualquier cosa, un objeto, un arreglo, string, etc.
+
+  * Ahora, debemos especificar desde donde podrá ser accedido el contexto, en pocas palabras, definir en que componente y cuales podrán usarlo.
+
+  ``` javascript
+    import React, { Component } from 'react';
+    import MyContext from '../context/my-context';
+
+    class App extends Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          authenticated: false
+        };
+      };
+
+      loginHandler = () => {
+        this.setState({ authenticated: true });
+      };
+
+      render () {
+        return (
+          <div>
+            <p>This is my app</p>
+            <p>No Context Acces</p>
+            <button onClick={this.loginHandler}>Log in</button>
+            <MyContext.Provider value={{ authenticated: this.state.authenticated }}>
+              <MyContextComponent />
+            </MyContext.Provider>
+          </div>
+        );
+      }
+    };
+
+    export default App;
+  ```
+
+  Es evidente que todo aquello que este envuelto dentro del componente `Provider` tendrá acceso al contexto. Además, a este componente le podemos pasar el valor inicial de nuestro Contexto, porque recordemos que lo unico que dispara un re-renderizado en React es un cambio en el estado o props.
+
+  * Por ultimo debemos utilizar nuestro contexto dentro del componente hijo donde lo requerimos.
+
+  ``` javascript
+    import React, { Component } from 'react';
+    import MyContext from '../../../context/my-context';
+
+    class LowComponent extends Component {
+      render () {
+        return (
+          <MyContext.Consumer>
+            {
+              (context) => context.authenticated ? <p>Authenticated!</p> : <p>Please Log in</p> 
+            }
+          </MyContext.Consumer>
+        )
+      };
+    };
+
+    export default LowComponent;
+  ```
+  En cuanto al uso del contexto, lo unico diferente es el nombre del componente que usamos, en este caso `Consumer`, y la forma en la que lo usamos. La manera adecuada de usarla es usando {} y dentro de ellos declarar una Funcion expresion que, reciba el context y devuelva los elemtenos JSX que queremos renderizar.
+
+  ### contextType y useContext()
+
+  La forma que hemos visto de implementar el contexto del lado del Consumer nos resulta un poco verbosa y dificil de leer, sin embargo, React nos permite utilizar una nueva forma en los componentes basados en clases y aquellos funcionales usando React Hooks. Veamos cuales son:
+
+  * Para componentes basados en clases podemos usar contextType, la cual es una propiedad estatica de las clases en React y nos permite acceder al contexto por fuera del metodo Render, es decir, puede ser utilizado dentro de cualquier otro metodo de la clase. Cuando lo usamos, React automaticamente nos agrega como propiedad `this.context` a nuestro componente clase.
+
+  ``` javascript
+    import React, { Component } from 'react';
+    import MyContext from '../../../context/my-context';
+
+    class LowComponent extends Component {
+
+      static contextType = MyContext;
+
+      componentDidMount () {
+        console.log(this.context.authenticated);
+      };
+
+      render () {
+        return (
+          {
+            this.context.authenticated ? <p>Authenticated!</p> : <p>Please Log in</p> 
+          }
+      };
+    };
+
+    export default LowComponent;
+  ```
+  * En componentes funcionales podes hacer uso del React Hook llamado `useContext()` el cual nos recibe como argumento nuestro objeto de contexto. Similar a como funciona contextType, React enlaza automaticamente el Contexto que creamos.
+
+  ``` javascript
+    import React, { useContext, useEffect } from 'react';
+    import MyContext from '../../../../context/my-context';
+
+    const lowComponent = props => {
+      const myContext = useContext(MyContext);
+
+      useEffect(() => {
+        console.log(myContext.autheticated);
+      }, []);
+
+      return (
+        {
+          myContext.authenticated ? <p>Authenticated!</p> : <p>Please Log in</p> 
+        }
+      )
+    };
+  
+    export default lowComponent;
+  ```

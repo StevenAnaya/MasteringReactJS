@@ -1,26 +1,27 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useContext,useEffect, useRef } from 'react';
 
 /* STYLES */
 import { StyledButton } from './styles';
 
+/* CONTEXT */
+import AuthContext from '../../context/auth-context';
+
 const Cockpit = (props) => {
+    const buttonRef = useRef(null);
+    const authContext = useContext(AuthContext);
+
     useEffect(() => {
     console.log('[Cockpit] first useEffect function');
+
     setTimeout(() => {
       alert('[Cockpit] timer')
     }, 1000);
+    
+    buttonRef.current.click(); //Clickea el button cuando el componente se ha montado
     return () => {
-    console.log('[Cockpit] second useEffect cleanup function');
+      console.log('[Cockpit] second useEffect cleanup function');
     };
   }, []);
-
-  useEffect(() => {
-    console.log('[Cockpit] first 2nd useEffect function');
-    return () => {
-    console.log('[Cockpit] second 2nd useEffect cleanup function');
-    };
-  });
-
 
   const classes = [];
 
@@ -38,7 +39,9 @@ const Cockpit = (props) => {
       <p className={classes.join(' ')}>I display persons information</p>
       <StyledButton
         onClick={props.clicked}
+        ref={buttonRef}
         alts={props.showPersons}>Show Persons</StyledButton>
+      <button onClick={authContext.login}>Log In</button>
     </Fragment>
   );
 };

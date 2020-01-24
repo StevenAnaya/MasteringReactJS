@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Person from './Person';
 
@@ -19,7 +20,7 @@ class Persons extends Component {
   render () {
     console.log('[Persons.js] render...');
     return this.props.persons.map((person, index) => {
-      return <Person  
+      return <Person
         name={person.name}
         age={person.age}
         click={this.props.click.bind(this, index)}
@@ -28,6 +29,12 @@ class Persons extends Component {
       />
     });
   }
+};
+
+Persons.propTypes = {
+  persons: PropTypes.array,
+  click: PropTypes.func,
+  change: PropTypes.func
 };
 
 export default Persons;

@@ -5,6 +5,9 @@ import './App.css';
 import Persons from '../components/Persons';
 import Cockpit from '../components/Cockpit';
 
+/* CONTEXT */
+import AuthContext from '../context/auth-context';
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +22,9 @@ class App extends Component {
     ],
     otherInfo: 'This is other related information',
     showPersons: false,
-    showCockpit: true
+    showCockpit: true,
+    counter: 0,
+    authenticated: false
   };
 
   static getDerivedStateFromProps = (props, state) => {
@@ -55,9 +60,17 @@ class App extends Component {
     const persons = [...this.state.persons];
     persons[personIndex] = person;
 
-    this.setState({ persons });
+    this.setState((prevState, props) => {
+      return {
+        persons,
+        counter: prevState.counter + 1
+      }
+    });
   };
 
+  loginHandler = () => {
+    this.setState({ authenticated: true });
+  }
 
   render() {
     console.log('[App.js] render')
@@ -74,21 +87,23 @@ class App extends Component {
     return (
       <div className="App"> 
         <button onClick={() => { this.setState({ showCockpit: false }) }}>Off Cockpit</button>
-        {
-          this.state.showCockpit ? 
-            <Cockpit
-              title={this.props.title}
-              showPersons={this.state.showPersons}
-              persons={this.state.persons.length}
-              clicked={this.switchVisibilityPersons}
-            />
-          : null
-        }
-        <div>
+        <AuthContext.Provider value={{ authenticated: this.state.authenticated, login: this.loginHandler }}>
           {
-            persons
+            this.state.showCockpit ? 
+              <Cockpit
+                title={this.props.title}
+                showPersons={this.state.showPersons}
+                persons={this.state.persons.length}
+                clicked={this.switchVisibilityPersons}
+              />
+            : null
           }
-        </div>
+          <div>
+            {
+              persons
+            }
+          </div>
+        </AuthContext.Provider>
       </div>
     );
   };
