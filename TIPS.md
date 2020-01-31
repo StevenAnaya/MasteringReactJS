@@ -125,3 +125,33 @@ Es común que nos encontremos con el escenario de manejo de errores dentro de nu
 * Por otro lado, nuestro HOC recibe el componente que envuelve, el objeto de axios y devuelve **siempre** el componente envuelto junto al componente que usemos para mostrar el error. Es evidente, que tenemos que pasar las propiedades del componente y ademas hacer el errorHandling que necesitemos.
 
 * Por otro lado, es correcto decir que si necesitamos eliminar estos interceptores que creamos, tenemos que usar los LifeCycle Hooks que estan disponibles para el desmontado de los componentes, como el `componenteWillUnmount` o la funcion que retornamos en el ReactHook `useEffect`.
+
+## React.lazy()
+
+Desde la versión `v16.6.0` de React, se crearón formas de realizar importaciones dinamicas de nuestro codigo, no solo en Routing, tambien en cualquier tipo de componente. Para cargar nuestro código asincronamente tenemos que usar el metodo `React.lazy()` y el componente `<Suspense />` que nos brinda la libreria core de React. Veamos en código como es dicha implementación.
+
+``` javascript
+  import React, { lazy, Suspense } from 'react';
+  import { Switch } from 'react-router-dom';
+  import SyncComp from '../components/SyncComp';
+
+  const Home = lazy(() => import('../components/Home'));
+
+  const App = props => {
+    return (
+      <Switch>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Route path="/" component={SyncComp}/>
+          <Route path="/home" component={Home}/>
+        <Suspense>
+      </Switch>
+    );
+  };
+
+  export default App;
+```
+* Actualmente `React.lazy` soporta unicamente `default exports` y no `named exports`.
+
+* En resumen, usamos `lazy()` para importar dinamicamente, `<Suspense>` para decirle que codigo debe esperar y que poner mientras el componente se está cargando.
+
+Esta práctica nos trae un montón de beneficios en cuanto a rendimiento a medida de que nuestros pequeños modulos van creciendo y se van haciendo más complejos.
