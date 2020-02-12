@@ -155,3 +155,118 @@ Desde la versión `v16.6.0` de React, se crearón formas de realizar importacion
 * En resumen, usamos `lazy()` para importar dinamicamente, `<Suspense>` para decirle que codigo debe esperar y que poner mientras el componente se está cargando.
 
 Esta práctica nos trae un montón de beneficios en cuanto a rendimiento a medida de que nuestros pequeños modulos van creciendo y se van haciendo más complejos.
+
+
+## Children API
+
+El API Children de React nos permite interactuar con todos aquellos elementos pasados como hijos directos dentro de un elementos JSX. La forma común de interactuar con esta API es usando simplemente la propiedad `props.children` donde estará contenido cualquier elemento(s), string u objeto que sea pasado al componente. Sin duda, existe una API que nos permite usar ciertos metodos utiles al momento de tratar con `children` en nuestro componentes React.
+
+[React Children Documentation](https://reactjs.org/docs/react-api.html#reactchildren)
+
+``` javascript
+import React, { Component, Children } from 'react';
+
+class ChildrenComponent extends Component {
+  render = () => {
+    return(
+      <div>
+      {
+        Children.only(this.props.children)
+      }
+      </div>
+    );
+  };
+};
+
+export default ChildrenComponent;
+```
+
+* Este metodo se asegurá de unicamente recibir un solo elemento dentro de la propiedad Children. De recibir más de uno, arrojará error.
+
+``` javascript
+  import React, { Component, Children } from 'react';
+
+  class ChildrenComponent extends Component {
+    render = () => {
+      const buttons = Children.map(this.props.children, child => (
+        <button>
+          <h1>Total Children: {Children.count(this.props.children)}</h1>
+          {child}
+        </button>
+      ));
+
+      return(
+        <div>
+        {
+          buttons
+        }
+        </div>
+      );
+    };
+  };
+
+  export default ChildrenComponent;
+```
+
+* El metodo `Children.map()` nos permite, al igual que map en un array, iterar sobre cada uno de los elementos pasados como argumento, en este caso, la propiedad `props.children` para luego recibir una función que se ejecutará por cada uno de los elementos.
+
+* El metodo `Children.count()` realiza un conteo de los hijos pasados dentro del componente, es decir, nos devuelve la cantidad exacta de hijos pasados a nuestro componente.
+
+
+``` javascript
+ class SlideShow extends Component {
+  state = {
+    total: 0,
+    current: 0,
+  }
+
+  componentDidMount() {
+    const { children } = this.props;
+    this.setState({ total: Children.count(children) });
+    this.interval = setInterval(this.showNext, 3000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  showNext = () => {
+    const { total, current } = this.state;
+    this.setState({
+      current: current + 1 === total? 0 : current + 1
+    });
+  };
+
+  render() {
+    const { children } = this.props;
+    const bullets = Array(this.state.total).fill("○");
+    bullets[this.state.current] = "●";
+    return (
+      <div className="slideshow">
+        <div>{bullets}</div>
+          {Children.toArray(children)[this.state.current]}
+      </div>
+    )
+  }
+}
+```
+
+* El metodo `Children.toArray()` nos permite crear un arreglo con los hijos que nos lleguen y en este caso, por ejemplo, mostrar unicamente el que se encuentre como actual dentro del estado.
+
+## Copiar un Objeto completamente
+
+Es común utilizar una caracteristica de ES8 como el Spread operator para copiar objetos sin solo copiar la referencia en memoria. Este enfoque es valido solamente hasta ciertos niveles de anidamiento de objetos. Cuando intentamos modificar objetos anidados en niveles muy internos, se va a ver afectado el objeto del cual hemos realiado la copia debido a dentro de dichos niveles no se haya una copia aislada sino una referencia al objeto original.
+
+Para solucionar dicho incoveniente, podemos utilizar esta solución popular:
+
+``` javascript
+  const deepCloneObj = JSON.parse(JSON.stringify(obj));
+```
+
+* Este codigo nos asegura tener toda una copia independiente sin importar los niveles de anidamiento que tenga.
+
+## Libreria para Formularios
+
+[Formik](https://jaredpalmer.com/formik) es una libreria liviana, simple y eficiente para controlar los estados basicos de los formulario y no morir en el intento.
+
+Por otro lado, existe un paquete realmente simple para controlar inputs que necesitan algun tipo de mascara para mostrar la información al usuario con un formato determinado. [react-input-mask](http://sanniassin.github.io/react-input-mask/demo)
