@@ -179,3 +179,51 @@ Aquí tenemos la [documentación](https://react-redux.js.org/api/connect#mapdisp
 ```
 * El metodo debe recibir principalmente un argumento *dispatch* que en realidad es el metodo que nos provee Redux para realizar el envio de eventos. 
 * El metodo `dispatch` no cambia, sigue recibiendo el mismo objeto con el type y con los valores adicionales.
+
+## Actualizar el Estado Inmutablemente
+
+En teoria, Redux nos dice que no debemos crear modificaciones que muten nuestro estado y generen comportamientos innesperados dentro de nuestra aplicación. La preocupación de esto es debido a la naturaleza de los tipos de referencia que existen en JavaScript. Ahora pensando en formas de no mutar el estado indebidamente, podemos usar las practicas más comunes:
+
+``` javascript
+  //No Deeping Clone - Works in some cases
+  Object.assign({}, values);
+
+  //No Deeping Clone - Works in some cases
+  const cloneObj = { ...oldObj, newValues };
+
+  //Deeping Clone - Works in all scenarios
+  const newObj = JSON.parse(JSON.stringify(obj));
+```
+Las soluciones anteriores funcionan perfectamente y no causan efectos de rendimiento, pero si queremos usar una forma más elegante de trabajar con Programación Inmutable, podemos usar la libreria [ImmutableJS](https://immutable-js.github.io/immutable-js/docs/#/)
+
+## Combinando Varios Reducers
+
+Redux nos permite crear una mejora experiencia de desarrollo mediante la separación de Reducers en varios archivos pero la misma libreria se encarga de unificarlos todos en uno solo para pasarlo al Store. El metodo que nos permite combinarlos se llama `combineReducers()`.
+
+Aquí tenemos la [documentación](https://redux.js.org/api/combinereducers) sobre el metodo.
+
+``` javascript
+  import { createStore, combineReducers } from 'redux';
+  import counterReducer from '../reducer/counter';
+  import resultReducer from '../reducer/result';
+
+  const rootReducer = combineReducer({
+    ctr: counterReducer,
+    res: resultReducer
+  });
+
+  const store = createStore(rootReducer);
+```
+
+* el metodo combineReducer crea el Store con las claves que le pasamos como nombre y dentro de ellas iran los valores que asignamos como InitialState dentro de nuestro Reducer. Por ejemplo quedaría algo así:
+
+``` javascript
+  //Redux Store
+  {
+    ctr: {
+      counter: 0
+    },
+    res: [0, 20, 30]
+  }
+```
+
