@@ -226,4 +226,138 @@ Aquí tenemos la [documentación](https://redux.js.org/api/combinereducers) sobr
     res: [0, 20, 30]
   }
 ```
+## Redux Avanzado
 
+### Middlewares
+
+Los Middlewares son un patrón de diseño que nos permite agregar codigo o funciones intermedias que se ejecutan para realizar cierto codigo previo antes que una acción principal se ejecute. Este patrón es muy usado en entornos como ExpressJS por ejemplo, donde se pueden implentar logicas de manejo de rutas, sesiones o redirecciones. Por otro lado, en Redux estos Middlewares están tambien presentes y nos permiten agregar cosas interesantes a nuestro flujo de manejo de estado. 
+
+Aquí podemos ver la [documentación](https://redux.js.org/advanced/middleware) de los Middlewares en Redux.
+
+Poniendo en practica, vamos a crear un simple Middleware para Loggear en pantalla las acciones que se estan enviando:
+
+``` javascript
+  import { applyMiddleware } from 'redux';
+
+  const logger = store => {
+    return next => {
+      return action => {
+        console.log('[Middleware] Dispatching' + action);
+        const result = next(action);
+        console.log('[Middleware] Next state' + store.getState());
+        return result;
+      };
+    };
+  };
+
+  const store = createStore(rootReducer, applyMiddleware(logger));
+```
+
+* La función es un closure que recibe el store y devuelve una funcion que devuelve otra funcion.
+* La función que recibe `next` contiene la función que se ejecutra después del Middleware.
+* La función que recibe `action` contiene la información relacionada a la acción que se envía al reducer.
+* Redux se encargá de hacer el llamado de esas funciones, no tenemos que preocuparnos por eso, solamante tenemos que pasar como argumento nuestro Middleware dentro de `applyMiddleware`.
+* La función que recibe `action` debe ejecutar `next` y pasarle como argumento siempre `action` para que se ejecute el flujo restante y pueda llegar al reducer.
+* En este caso una vez ejecutamos `next`, imprimimos en pantalla el estado siguiente usando el parametro Store.
+
+
+## React DevTools
+
+En la sección anterior aprendimos que son los Middleware y como podemos usarlos. El ejemplo que dimos fue un simple Logger de cada `Action` que se ejecuta cada vez que hacemos el envío, pero a menudo, necesitamos más detalle al inspeccionar nuestras aplicaciones. React DevTools nos permite hacer un seguimiento completo del estado usando una extensión en el navegador y conectando nuestro Store con el Middleware previsto para tal caso.
+
+La instalación de esta herramienta es realmente simple y no necesitamos nada más que la documentación de la misma.
+
+[React DevTools Documentation](https://github.com/zalmoxisus/redux-devtools-extension)
+
+## Actions Creators
+
+Son Funciones que crean y retornan accione, Así de simple son. Estas pueden recibir información adicional.
+
+Aquí tenemos la [documentación](https://redux.js.org/basics/actions/#action-creators)
+
+``` javascript
+  const increment = (valueIncrement) => {
+    return {
+      type: INCREMENT,
+      value: valueIncrement
+    }
+  };
+```
+
+Component.js
+``` javascript
+  import * as actionCreators from '../actions';
+
+  const mapDispatchToProps = dispatch => {
+    return {
+      increment: () => dispatch(actionCreators.increment())
+    };
+  };
+```
+
+## Acciones Asincronas con Redux Thunk
+
+[Redux Thunk](https://github.com/reduxjs/redux-thunk) es una libreria que nos permite crear Acciones con codigo asincrono sin alterar o generar errores dentro del funcionamiento normal de Redux. Los conceptos básicos de esta libreria son simples:
+
+* Una Acción asincrona siempre debe usar `dispatch` con una acción sincrona.
+
+Para configurar esta libreria debemos, primero, instalarla:
+
+`npm install --save redux-thunk`
+
+Luego, debemos configurar nuestro Store con este nuevo Middleware:
+
+``` javascript
+  import { createStore, compose, applyMiddleware } from 'redux';
+  import thunk from 'redux-thunk';
+
+  const logger = store => {
+    return next => {
+      return action => {
+        const result = next(action);
+        return result;
+      };
+    };
+  };
+
+  const composeEnhancers = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
+
+  const store = createStore(
+    rootReducer,
+    composeEnhancer(applyMiddleware(logger, thunk))
+  );
+```
+
+Una vez tengamos nuestro Store configurado podemos crear Actions Asincronas:
+
+``` javascript
+  import api from '../api';
+
+  export const savePost = (post) => {
+    return {
+      action: SAVE_RES,
+      post: post
+    };
+  };
+
+  export const showError = (error) => {
+    return {
+      action: SHOW_ERROR,
+      error: error
+    };
+  };
+
+  export const asyncLoadPost = () => {
+    return dispatch => {
+      api.post
+        .then(res => {
+          dispatch(savePost(res));
+        })
+        .catch(err => {
+          dispatch(showError(err));
+        });
+    };
+  };
+```
+
+* Redux Thunk se encarga de interceptar nuestros actions y agregarle ese toque asincrono.
