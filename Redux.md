@@ -271,7 +271,7 @@ La instalación de esta herramienta es realmente simple y no necesitamos nada m�
 
 ## Actions Creators
 
-Son Funciones que crean y retornan accione, Así de simple son. Estas pueden recibir información adicional.
+Son Funciones que crean y retornan acciones, Así de simple son. Estas pueden recibir información adicional.
 
 Aquí tenemos la [documentación](https://redux.js.org/basics/actions/#action-creators)
 
@@ -361,3 +361,10 @@ Una vez tengamos nuestro Store configurado podemos crear Actions Asincronas:
 ```
 
 * Redux Thunk se encarga de interceptar nuestros actions y agregarle ese toque asincrono.
+
+## ¿Donde debería ir la logica?
+
+Para introducirnos en este topico es importante ser concientes que existen escenarios bastante comunes donde nos vemos obligados a agregarle una logica extra a los datos que nos llegan de nuestros servicios. Bien, en un ambiente sin Redux esto no tendría inconveniente en hacerse, pero como es el caso, cuando lo usamos ¿En donde debe ir dicha logica? ¿`Action Creator` o `Reducer`?... La respuesta es ninguno de los dos. Dicho código extra puede ser agregada en ambos lados sin ningun problemas, siempre y cuando, sigamos consistentemente una misma linea para no crear código dificil de mantener y de reutilizar.
+
+Por ultimo, como recomendación deberiamos guiarnos por la teoría de Redux la cual nos guia a hacer manipulaciones del estado dentro de los `Reducers`, sin embargo cualquiera de los dos enfoques funcionaría perfectamente.
+

@@ -270,3 +270,38 @@ Para solucionar dicho incoveniente, podemos utilizar esta solución popular:
 [Formik](https://jaredpalmer.com/formik) es una libreria liviana, simple y eficiente para controlar los estados basicos de los formulario y no morir en el intento.
 
 Por otro lado, existe un paquete realmente simple para controlar inputs que necesitan algun tipo de mascara para mostrar la información al usuario con un formato determinado. [react-input-mask](http://sanniassin.github.io/react-input-mask/demo)
+
+## Exportando multiples funciones provenientes de distintos archivos
+
+Cuando existe la necesidad de agrupar ciertas importaciones en un solo archivo para luego exportar de forma homogenea, nos encontramos con formas verbosas de hacerlo. Con los modulos de ES6 podemos exportar e importar en una sola sentencia.
+
+``` javascript
+  // a.js file
+  export const a = 10;
+  export const b = 20;
+  export const c = 30;
+```
+
+``` javascript
+  // b.js file
+  export const d = 40;
+  export const e = 50;
+  export const f = 60;
+```
+
+``` javascript
+  // index.js file
+  export {
+    a,
+    b,
+    c
+  } from 'a.js';
+  
+  export {  
+    d,
+    e,
+    f
+  } from 'b.js';
+```
+
+* En resumidas cuentas, estamos exportando lo que estamos importanto al mismo tiempo, esto es posible a los modulos de ES6.
